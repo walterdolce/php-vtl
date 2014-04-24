@@ -56,7 +56,6 @@ class ParserSpec extends ObjectBehavior
 
     function it_extracts_single_line_comments_content_correctly()
     {
-        //TODO: more tests for single line comment extraction
         $this->getCommentContent('##')->shouldReturn('');
         $this->getCommentContent('####')->shouldReturn('##');
         $this->getCommentContent('## foo')->shouldReturn('foo');
@@ -73,7 +72,10 @@ class ParserSpec extends ObjectBehavior
         $this->getCommentContent($string)->shouldReturn("first line");
         $string = "## first line\r\nsecond line";
         $this->getCommentContent($string)->shouldReturn("first line");
+    }
 
+    function it_extracts_multi_line_comments_content_correctly()
+    {
         $this->getCommentContent("#**#")->shouldReturn('');
         $this->getCommentContent("#***#")->shouldReturn('*');
         $this->getCommentContent("#*#**#*#")->shouldReturn('#**#');
@@ -89,4 +91,6 @@ class ParserSpec extends ObjectBehavior
         $this->getCommentContent(false)->shouldReturn(null);
         $this->getCommentContent(null)->shouldReturn(null);
     }
+
+    //TODO implement detection/extraction of VTL comment blocks
 }
