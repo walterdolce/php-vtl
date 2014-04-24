@@ -13,35 +13,44 @@ class Parser
     const MULTI_LINE_COMMENT_REGEXP = '/^#\*.*\*#$/s';
 
     /**
-     * @param $string
+     * @param $comment
      *
      * @return bool
      */
-    public function isSingleLineComment($string)
+    public function isSingleLineComment($comment)
     {
-        return is_string($string) and preg_match(self::SINGLE_LINE_COMMENT_REGEXP, $string);
+        return is_string($comment) and preg_match(self::SINGLE_LINE_COMMENT_REGEXP, $comment);
     }
 
     /**
-     * @param $string
+     * @param $comment
      *
      * @return bool
      */
-    public function isMultiLineComment($string)
+    public function isMultiLineComment($comment)
     {
-        return is_string($string) and preg_match(self::MULTI_LINE_COMMENT_REGEXP, $string);
+        return is_string($comment) and preg_match(self::MULTI_LINE_COMMENT_REGEXP, $comment);
     }
 
-    public function getCommentContent($string)
+    /**
+     * @param null $comment
+     *
+     * @return null|string
+     */
+    public function getCommentContent($comment)
     {
-        if ($this->isSingleLineComment($string)) {
-            $string = str_replace('## ','', $string);
-            return $string;
+        $commentContent = null;
+
+        if ($this->isSingleLineComment($comment)) {
+            $regexp = '/(##)(.*)(?s:.*)/';
+        } elseif ($this->isMultiLineComment($comment)) {
+            $regexp = '/(#\*)(.*)(\*#)/s';
         }
 
-        if ($this->isMultiLineComment($string)) {
-            $string = preg_replace('/^(#\*)(.*)(\*#)$/s','$2', $string);
-            return trim($string);
+        if (isset($regexp)) {
+            $commentContent = trim(preg_replace($regexp,'$2', $comment));
         }
+
+        return $commentContent;
     }
 }

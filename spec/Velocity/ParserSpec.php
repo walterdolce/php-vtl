@@ -57,12 +57,36 @@ class ParserSpec extends ObjectBehavior
     function it_extracts_single_line_comments_content_correctly()
     {
         //TODO: more tests for single line comment extraction
+        $this->getCommentContent('##')->shouldReturn('');
+        $this->getCommentContent('####')->shouldReturn('##');
         $this->getCommentContent('## foo')->shouldReturn('foo');
+        $this->getCommentContent('## foo ')->shouldReturn('foo');
         $this->getCommentContent('## foo bar')->shouldReturn('foo bar');
+        $this->getCommentContent('## foo ## foo')->shouldReturn('foo ## foo');
+        $string = "## first line
+
+        second line";
+        $this->getCommentContent($string)->shouldReturn("first line");
+        $string = "## first line\nsecond line";
+        $this->getCommentContent($string)->shouldReturn("first line");
+        $string = "## first line" . PHP_EOL . "second line";
+        $this->getCommentContent($string)->shouldReturn("first line");
+        $string = "## first line\r\nsecond line";
+        $this->getCommentContent($string)->shouldReturn("first line");
+
         $this->getCommentContent("#**#")->shouldReturn('');
-        $string = "#*
-        a
-        *#";
-        $this->getCommentContent($string)->shouldReturn('a');
+        $this->getCommentContent("#***#")->shouldReturn('*');
+        $this->getCommentContent("#*#**#*#")->shouldReturn('#**#');
+        $this->getCommentContent("#* * *#")->shouldReturn('*');
+        $this->getCommentContent("#*\na\n*#")->shouldReturn('a');
+        $this->getCommentContent("#*\n b \n*#")->shouldReturn('b');
+
+        $this->getCommentContent(1)->shouldReturn(null);
+        $this->getCommentContent(0)->shouldReturn(null);
+        $this->getCommentContent(0.1)->shouldReturn(null);
+        $this->getCommentContent(new \stdClass())->shouldReturn(null);
+        $this->getCommentContent(true)->shouldReturn(null);
+        $this->getCommentContent(false)->shouldReturn(null);
+        $this->getCommentContent(null)->shouldReturn(null);
     }
 }
